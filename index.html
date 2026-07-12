@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="618 Dönər - Ən dadlı dönər, tələbə qiyməti ilə. Çatdırılma pulsuzdur!" />
+  <title>618 Dönər</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo">
+      <img src="images/logo.jpg" alt="618 Dönər Logo" />
+      <span>618 Dönər</span>
+    </a>
+    <button class="burger" id="burgerBtn" aria-label="Menyu aç">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" class="nav-item">Ana Səhifə</a>
+      <a href="#menu" class="nav-item">Menyu</a>
+      <a href="#gallery" class="nav-item">Qalerya</a>
+      <a href="#order" class="nav-item">Sifariş</a>
+      <a href="#about" class="nav-item">Haqqında</a>
+      <a href="#contact" class="nav-item">Əlaqə</a>
+      <a href="#faq" class="nav-item">FAQ</a>
+    </nav>
+    <button class="cart-btn" id="cartBtn" aria-label="Səbət">
+      <i class="fas fa-shopping-basket"></i>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="home">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🔥 Çatdırılma Pulsuzdur!</div>
+    <h1>Ən Dadlı <span>Dönər</span><br/>Şəhərdə!</h1>
+    <p>Təzə materiallar, əl işi, unikal dad. Hər sifarişiniz sevgi ilə hazırlanır.</p>
+    <div class="hero-buttons">
+      <a href="#menu" class="btn btn-primary">Menyuya Bax</a>
+      <a href="#order" class="btn btn-outline">Sifariş Et</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>500+</strong><span>Gündəlik Sifariş</span></div>
+      <div class="stat"><strong>4.9★</strong><span>Müştəri Reytinqi</span></div>
+      <div class="stat"><strong>0 ₼</strong><span>Çatdırılma</span></div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="images/sandwich.jpg" alt="618 Dönər" loading="eager" />
+  </div>
+</section>
+
+<!-- ===== MENU ===== -->
+<section class="section" id="menu">
+  <div class="container">
+    <div class="section-header">
+      <h2>Menyumuz</h2>
+      <p>Keyfiyyətli dönər, əlverişli qiymətlə</p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" data-cat="fastfood">
+        <i class="fas fa-burger"></i> Fast Food
+      </button>
+      <button class="tab-btn" data-cat="drinks">
+        <i class="fas fa-bottle-water"></i> Sərin İçkilər
+      </button>
+      <button class="tab-btn" data-cat="sets">
+        <i class="fas fa-box-open"></i> Setlər
+      </button>
+    </div>
+
+    <!-- Fast Food -->
+    <div class="menu-grid" id="cat-fastfood">
+      <div class="menu-card" data-id="durum" data-name="Dürüm" data-price="3.50" data-cat="fastfood">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Dürüm" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Dürüm</h3>
+          <p class="menu-desc">Keyfiyyətli, təzə hazırlanmış klassik dönər dürüm.</p>
+          <div class="menu-footer">
+            <span class="price">3.50 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="telebe" data-name="Tələbə Dürüm" data-price="3.00" data-cat="fastfood">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Tələbə Dürüm" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Tələbə Dürüm</h3>
+          <p class="menu-desc">Keyfiyyətli dönər, tələbəyə uyğun əlverişli qiymətlə.</p>
+          <div class="menu-footer">
+            <span class="price">3.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="duble" data-name="Duble Dürüm" data-price="4.50" data-cat="fastfood">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Duble Dürüm" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Duble Dürüm</h3>
+          <p class="menu-desc">Keyfiyyətli dönər, ikiqat ət ilə hazırlanmış duble dürüm.</p>
+          <div class="menu-footer">
+            <span class="price">4.50 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="mega" data-name="Mega Dürüm" data-price="5.50" data-cat="fastfood">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Mega Dürüm" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Mega Dürüm</h3>
+          <p class="menu-desc">Keyfiyyətli dönər, mega ölçüdə, tam doyurucu dürüm.</p>
+          <div class="menu-footer">
+            <span class="price">5.50 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="susi" data-name="Suşi" data-price="6.00" data-cat="fastfood">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Suşi" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Suşi</h3>
+          <p class="menu-desc">Keyfiyyətli dönər materialları ilə hazırlanmış xüsusi suşi.</p>
+          <div class="menu-footer">
+            <span class="price">6.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drinks -->
+    <div class="menu-grid hidden" id="cat-drinks">
+      <div class="menu-card" data-id="fanta" data-name="Fanta" data-price="2.00" data-cat="drinks">
+        <div class="menu-img-wrap">
+          <img src="images/fanta.jpg" alt="Fanta" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Fanta</h3>
+          <p class="menu-desc">Soyuq, serinlədici portağal dadlı Fanta 500ml.</p>
+          <div class="menu-footer">
+            <span class="price">2.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sets -->
+    <div class="menu-grid hidden" id="cat-sets">
+      <div class="menu-card" data-id="menu1" data-name="Menu 1 (250 qr)" data-price="7.50" data-cat="sets">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Menu 1" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Menu 1 <span class="badge">250 qr</span></h3>
+          <p class="menu-desc">Keyfiyyətli dönər, 250 qramlıq xüsusi set menyusu.</p>
+          <div class="menu-footer">
+            <span class="price">7.50 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="menu2" data-name="Menu 2 (500 qr)" data-price="15.00" data-cat="sets">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Menu 2" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Menu 2 <span class="badge">500 qr</span></h3>
+          <p class="menu-desc">Keyfiyyətli dönər, 500 qramlıq xüsusi set menyusu.</p>
+          <div class="menu-footer">
+            <span class="price">15.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="menu3" data-name="Menu 3 (750 qr)" data-price="22.00" data-cat="sets">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Menu 3" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Menu 3 <span class="badge">750 qr</span></h3>
+          <p class="menu-desc">Keyfiyyətli dönər, 750 qramlıq xüsusi set menyusu.</p>
+          <div class="menu-footer">
+            <span class="price">22.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card" data-id="menu4" data-name="Menu 4 (1000 qr)" data-price="27.00" data-cat="sets">
+        <div class="menu-img-wrap">
+          <img src="images/sandwich.jpg" alt="Menu 4" loading="lazy" />
+          <button class="add-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="menu-info">
+          <h3>Menu 4 <span class="badge">1000 qr</span></h3>
+          <p class="menu-desc">Keyfiyyətli dönər, 1000 qramlıq böyük ailə set menyusu.</p>
+          <div class="menu-footer">
+            <span class="price">27.00 ₼</span>
+            <button class="add-cart-btn" aria-label="Səbətə əlavə et"><i class="fas fa-plus"></i> Əlavə et</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRODUCT MODAL ===== -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+    <img id="modalImg" src="" alt="" />
+    <h3 id="modalName"></h3>
+    <p id="modalDesc"></p>
+    <div class="modal-footer">
+      <span id="modalPrice" class="price"></span>
+      <button id="modalAddBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Səbətə əlavə et</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GALLERY ===== -->
+<section class="section bg-light" id="gallery">
+  <div class="container">
+    <div class="section-header">
+      <h2>Qalerya</h2>
+      <p>Məhsullarımıza bir nəzər atın</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-item">
+        <img src="images/sandwich.jpg" alt="Dönər 1" loading="lazy" />
+        <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/logo.jpg" alt="Dönər 2" loading="lazy" />
+        <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/fanta.jpg" alt="Fanta" loading="lazy" />
+        <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose"><i class="fas fa-times"></i></button>
+  <button class="lb-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+  <button class="lb-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+  <div class="lb-content">
+    <img id="lbImg" src="" alt="" />
+  </div>
+</div>
+
+<!-- ===== ORDER ===== -->
+<section class="section" id="order">
+  <div class="container">
+    <div class="section-header">
+      <h2>Sifariş Et</h2>
+      <p>Çatdırılma tamamilə pulsuzdur!</p>
+    </div>
+    <div class="order-layout">
+      <!-- Cart -->
+      <div class="cart-panel">
+        <h3><i class="fas fa-shopping-basket"></i> Səbətiniz</h3>
+        <div class="cart-items" id="cartItems">
+          <div class="cart-empty">
+            <i class="fas fa-basket-shopping"></i>
+            <p>Səbətiniz boşdur.<br/>Menyudan məhsul əlavə edin.</p>
+          </div>
+        </div>
+        <div class="cart-summary" id="cartSummary" style="display:none;">
+          <div class="cart-total">
+            Cəmi: <strong id="cartTotal">0.00 ₼</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="form-panel">
+        <form id="orderForm" novalidate>
+          <div class="form-group">
+            <label for="custName"><i class="fas fa-user"></i> Adınız *</label>
+            <input type="text" id="custName" placeholder="Adınızı daxil edin" required />
+          </div>
+          <div class="form-group">
+            <label for="custPhone"><i class="fas fa-phone"></i> Telefon *</label>
+            <input type="tel" id="custPhone" placeholder="+994 XX XXX XX XX" required />
+          </div>
+          <div class="form-group">
+            <label for="custAddress"><i class="fas fa-map-marker-alt"></i> Ünvan *</label>
+            <div class="address-row">
+              <input type="text" id="custAddress" placeholder="Ünvanınızı daxil edin" required />
+              <button type="button" class="loc-btn" id="getLocBtn" title="Konumumu al">
+                <i class="fas fa-location-crosshairs"></i>
+              </button>
+            </div>
+            <input type="hidden" id="locationLink" />
+            <div class="loc-status" id="locStatus"></div>
+          </div>
+          <div class="form-group">
+            <label for="custNote"><i class="fas fa-sticky-note"></i> Əlavə Qeyd</label>
+            <textarea id="custNote" placeholder="Sifarişiniz haqqında qeyd əlavə edin..." rows="3"></textarea>
+          </div>
+          <div class="form-group order-items-preview" id="orderItemsPreview" style="display:none;">
+            <label><i class="fas fa-list"></i> Sifarişləriniz</label>
+            <div id="orderItemsList" class="order-items-list"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="sendOrderBtn">
+            <i class="fab fa-whatsapp"></i> WhatsApp ilə Sifariş Göndər
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="section bg-light" id="about">
+  <div class="container">
+    <div class="section-header">
+      <h2>Haqqımızda</h2>
+      <p>618 Dönər ailəsi ilə tanış olun</p>
+    </div>
+    <div class="about-layout">
+      <div class="about-image">
+        <img src="images/logo.jpg" alt="618 Dönər" loading="lazy" />
+      </div>
+      <div class="about-content">
+        <h3>Dadlı Dönərin Ünvanı</h3>
+        <p>618 Dönər olaraq biz hər gün ən təzə materiallarla hazırladığımız dönərləri sizə çatdırmaqdan qürur duyuruq. Müştəri məmnuniyyəti bizim birinci prioritetimizdir.</p>
+        <p>Əlimizlə hazırladığımız hər bir dönər, unikal dad və keyfiyyət vəd edir. Tələbədən tutmuş ailə süfrəsinə qədər hər kəs üçün uyğun seçimlərimiz var.</p>
+
+        <div class="hours-grid">
+          <div class="hours-card">
+            <div class="hours-icon"><i class="fas fa-clock"></i></div>
+            <div class="hours-info">
+              <h4>İş Saatları</h4>
+              <div class="hours-list">
+                <div class="hours-row">
+                  <span>Bazar ertəsi – Cümə</span>
+                  <strong>09:00 – 23:00</strong>
+                </div>
+                <div class="hours-row">
+                  <span>Şənbə</span>
+                  <strong>09:00 – 24:00</strong>
+                </div>
+                <div class="hours-row">
+                  <span>Bazar</span>
+                  <strong>10:00 – 23:00</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hours-card delivery-card">
+            <div class="hours-icon"><i class="fas fa-motorcycle"></i></div>
+            <div class="hours-info">
+              <h4>Çatdırılma</h4>
+              <p class="free-tag">🎉 Tamamilə Pulsuzdur!</p>
+              <p>Hər hansı bir sifarişdə çatdırılma ödənişi yoxdur.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <h2>Əlaqə</h2>
+      <p>Bizimlə əlaqə saxlayın</p>
+    </div>
+    <div class="contact-cards">
+      <a href="https://wa.me/994559406018" target="_blank" rel="noopener" class="contact-card whatsapp">
+        <div class="cc-icon"><i class="fab fa-whatsapp"></i></div>
+        <div class="cc-info">
+          <h4>WhatsApp</h4>
+          <p>+994 55 940 60 18</p>
+          <span>Birbaşa mesaj göndər</span>
+        </div>
+        <i class="fas fa-arrow-right cc-arrow"></i>
+      </a>
+
+      <a href="https://www.instagram.com/618_acc?igsh=eGZ6NDBqbnltbzJv" target="_blank" rel="noopener" class="contact-card instagram">
+        <div class="cc-icon"><i class="fab fa-instagram"></i></div>
+        <div class="cc-info">
+          <h4>Instagram</h4>
+          <p>@618_acc</p>
+          <span>Profili izlə</span>
+        </div>
+        <i class="fas fa-arrow-right cc-arrow"></i>
+      </a>
+
+      <a href="https://maps.app.goo.gl/seymCjLMXh1QxUP86" target="_blank" rel="noopener" class="contact-card location">
+        <div class="cc-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="cc-info">
+          <h4>Məkanımız</h4>
+          <p>Xəritədə tap</p>
+          <span>Google Maps-də aç</span>
+        </div>
+        <i class="fas fa-arrow-right cc-arrow"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="section bg-light" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <h2>Tez-tez Verilən Suallar</h2>
+      <p>Ən çox soruşulan suallar</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Çatdırılma pulludurmu?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Xeyr! 618 Dönər olaraq bütün sifarişlər üçün çatdırılma tamamilə pulsuzdur. Heç bir əlavə ödəniş tələb etmirik.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Minimum sifariş məbləği varmı?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Minimum sifariş məbləği yoxdur. Tək dürümdən tutmuş böyük set menyulara qədər hər sifarişi qəbul edirik.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Sifariş nə qədər müddətdə çatır?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Sifarişiniz adətən 20-40 dəqiqə ərzində çatdırılır. Bu müddət ünvandan asılı olaraq dəyişə bilər.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Hansı ödəniş üsulları mövcuddur?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Hazırda nağd ödəniş qəbul edirik. Kartla ödəniş imkanı tezliklə əlavə ediləcəkdir.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Sifarişimi necə verə bilərəm?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Saytımızdan menyumuzu seçib "Sifariş Et" bölməsindən formu dolduraraq WhatsApp vasitəsilə sifariş verə bilərsiniz. Ya da birbaşa +994 55 940 60 18 nömrəsinə WhatsApp-dan yazın.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Tələbə dürümü nədir?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Tələbə dürümü tələbə büdcəsinə uyğun hazırlanmış, 3.00 AZN qiymətinə keyfiyyətli dönər dürümüdür. Eyni leziz dad, əlverişli qiymətlə!</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Set menyular nədən ibarətdir?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Set menyularımız (250qr, 500qr, 750qr, 1000qr) müxtəlif ölçülərdə hazırlanmış dönər setidir. Qrup sifarişlər və ailə yığıncaqları üçün idealdır.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span>Sifarişimi dəyişdirmək istəsəm nə etməliyəm?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a">
+          <p>Sifarişi WhatsApp-a göndərdikdən sonra dəyişiklik etmək üçün +994 55 940 60 18 nömrəsinə yazmağınız kifayətdir. Sifariş hazırlanmadan dəyişiklik mümkündür.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="images/logo.jpg" alt="618 Dönər" />
+        <h4>618 Dönər</h4>
+        <p>Ən dadlı dönər, pulsuz çatdırılma ilə qapınıza gəlir.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Keçidlər</h5>
+        <ul>
+          <li><a href="#home">Ana Səhifə</a></li>
+          <li><a href="#menu">Menyu</a></li>
+          <li><a href="#gallery">Qalerya</a></li>
+          <li><a href="#order">Sifariş</a></li>
+          <li><a href="#about">Haqqında</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h5>Əlaqə</h5>
+        <a href="https://wa.me/994559406018" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> +994 55 940 60 18</a>
+        <a href="https://www.instagram.com/618_acc?igsh=eGZ6NDBqbnltbzJv" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> @618_acc</a>
+        <a href="https://maps.app.goo.gl/seymCjLMXh1QxUP86" target="_blank" rel="noopener"><i class="fas fa-map-marker-alt"></i> Xəritəyə bax</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 618 Dönər. Bütün hüquqlar qorunur.</p>
+      <p>🛵 Çatdırılma Pulsuzdur!</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer-panel">
+    <div class="drawer-header">
+      <h3><i class="fas fa-shopping-basket"></i> Səbətiniz</h3>
+      <button class="drawer-close" id="drawerClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="drawer-items" id="drawerItems">
+      <div class="cart-empty">
+        <i class="fas fa-basket-shopping"></i>
+        <p>Səbətiniz boşdur</p>
+      </div>
+    </div>
+    <div class="drawer-footer" id="drawerFooter" style="display:none;">
+      <div class="drawer-total">Cəmi: <strong id="drawerTotal">0.00 ₼</strong></div>
+      <a href="#order" class="btn btn-primary btn-full" id="goOrderBtn">Sifarişi Tamamla</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== SCROLL TOP ===== -->
+<button class="scroll-top" id="scrollTop" aria-label="Yuxarı qayıt">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>
