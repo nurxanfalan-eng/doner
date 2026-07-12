@@ -1,310 +1,290 @@
-/* ===================================================
-   618 Dönər – app.js
-   Pure vanilla JS, no dependencies, no server needed
-   =================================================== */
+/**
+ * 618 Dönər – app.js
+ * Pure vanilla JS, zero dependencies, optimized
+ */
 
-'use strict';
+(function () {
+  'use strict';
 
-// ────────────────────────────────────────────────
-// STATE
-// ────────────────────────────────────────────────
-let cart = [];
-let galleryImages = [];
-let lightboxIndex = 0;
+  /* =============================================
+     CART STATE
+  ============================================= */
+  let cart = []; // [{id, name, price, qty}]
 
-// ────────────────────────────────────────────────
-// DOM REFS
-// ────────────────────────────────────────────────
-const $  = (sel, ctx) => (ctx || document).querySelector(sel);
-const $$ = (sel, ctx) => [...(ctx || document).querySelectorAll(sel)];
+  /* =============================================
+     UTILITY
+  ============================================= */
+  function $(sel, ctx) { return (ctx || document).querySelector(sel); }
+  function $$(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
 
-// ────────────────────────────────────────────────
-// NAVBAR
-// ────────────────────────────────────────────────
-(function initNavbar() {
-  const navbar   = $('#navbar');
-  const burger   = $('#burgerBtn');
-  const navLinks = $('#navLinks');
+  function fmt(n) { return parseFloat(n).toFixed(2) + ' ₼'; }
 
-  // Scroll shadow
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 20);
-    $('#scrollTop').classList.toggle('visible', window.scrollY > 300);
-    updateActiveNav();
+  function showToast(msg, dur) {
+    dur = dur || 2000;
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.classList.remove('show'); }, dur);
+  }
+
+  /* =============================================
+     NAVBAR
+  ============================================= */
+  var navbar = $('#navbar');
+  var burgerBtn = $('#burgerBtn');
+  var navLinks = $('#navLinks');
+
+  window.addEventListener('scroll', function () {
+    navbar.classList.toggle('scrolled', window.scrollY > 10);
+    $('#scrollTop').classList.toggle('show', window.scrollY > 300);
   }, { passive: true });
 
-  // Burger menu
-  burger.addEventListener('click', () => {
-    burger.classList.toggle('open');
+  burgerBtn.addEventListener('click', function () {
+    burgerBtn.classList.toggle('open');
     navLinks.classList.toggle('open');
   });
 
   // Close nav on link click
-  $$('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      burger.classList.remove('open');
+  $$('.nav-item').forEach(function (link) {
+    link.addEventListener('click', function () {
+      burgerBtn.classList.remove('open');
       navLinks.classList.remove('open');
     });
   });
 
-  // Active nav on scroll
-  function updateActiveNav() {
-    const sections = $$('section[id]');
-    const scrollY  = window.scrollY + 80;
-    sections.forEach(sec => {
-      const top = sec.offsetTop;
-      const h   = sec.offsetHeight;
-      const id  = sec.getAttribute('id');
-      const link = $(`.nav-item[href="#${id}"]`);
-      if (link) link.classList.toggle('active', scrollY >= top && scrollY < top + h);
+  // Active nav highlight on scroll
+  var sections = $$('section[id]');
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        $$('.nav-item').forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+        });
+      }
     });
-  }
+  }, { threshold: 0.3 });
+  sections.forEach(function (s) { observer.observe(s); });
 
-  // Scroll top
-  $('#scrollTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-})();
+  /* =============================================
+     SCROLL TOP
+  ============================================= */
+  $('#scrollTop').addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-// ────────────────────────────────────────────────
-// MENU TABS
-// ────────────────────────────────────────────────
-(function initTabs() {
-  const tabBtns = $$('.tab-btn');
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.remove('active'));
+  /* =============================================
+     CATEGORY TABS
+  ============================================= */
+  $$('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cat = btn.dataset.cat;
+      $$('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      const cat = btn.dataset.cat;
-      $$('.menu-grid').forEach(grid => grid.classList.add('hidden'));
-      $(`#cat-${cat}`).classList.remove('hidden');
+      $$('.menu-grid').forEach(function (g) {
+        g.classList.toggle('hidden', g.id !== 'cat-' + cat);
+      });
     });
   });
-})();
 
-// ────────────────────────────────────────────────
-// PRODUCT MODAL
-// ────────────────────────────────────────────────
-(function initProductModal() {
-  const modal    = $('#productModal');
-  const closeBtn = $('#modalClose');
-  const addBtn   = $('#modalAddBtn');
-
-  let currentItem = null;
+  /* =============================================
+     PRODUCT MODAL
+  ============================================= */
+  var productModal = $('#productModal');
+  var modalClose = $('#modalClose');
+  var modalImg = $('#modalImg');
+  var modalName = $('#modalName');
+  var modalDesc = $('#modalDesc');
+  var modalPrice = $('#modalPrice');
+  var modalAddBtn = $('#modalAddBtn');
+  var currentCard = null;
 
   function openModal(card) {
-    const name  = card.dataset.name;
-    const price = parseFloat(card.dataset.price);
-    const img   = card.querySelector('.menu-img-wrap img');
-    const desc  = card.querySelector('.menu-desc');
-
-    currentItem = { id: card.dataset.id, name, price };
-
-    $('#modalImg').src     = img ? img.src : '';
-    $('#modalImg').alt     = name;
-    $('#modalName').textContent = name;
-    $('#modalDesc').textContent = desc ? desc.textContent : '';
-    $('#modalPrice').textContent = price.toFixed(2) + ' ₼';
-
-    modal.classList.add('open');
+    currentCard = card;
+    var img = $('img', card);
+    modalImg.src = img.src;
+    modalImg.alt = img.alt;
+    modalName.textContent = card.dataset.name;
+    modalDesc.textContent = $('p.menu-desc', card).textContent;
+    modalPrice.textContent = fmt(card.dataset.price);
+    productModal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
-    modal.classList.remove('open');
+    productModal.classList.remove('open');
     document.body.style.overflow = '';
-    currentItem = null;
+    currentCard = null;
   }
 
-  // Card image click → modal
-  $$('.menu-card').forEach(card => {
-    card.querySelector('.menu-img-wrap').addEventListener('click', (e) => {
-      if (e.target.closest('.add-btn')) return;
+  // Open on card click (not on add button)
+  $$('.menu-card').forEach(function (card) {
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('.add-btn') || e.target.closest('.add-cart-btn')) return;
       openModal(card);
     });
   });
 
-  // Close modal
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  modalClose.addEventListener('click', closeModal);
+  productModal.addEventListener('click', function (e) {
+    if (e.target === productModal) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeModal(); closeLightbox(); }
+  });
 
-  // Add from modal
-  addBtn.addEventListener('click', () => {
-    if (currentItem) {
-      addToCart(currentItem.id, currentItem.name, currentItem.price);
-      closeModal();
+  modalAddBtn.addEventListener('click', function () {
+    if (currentCard) addToCart(currentCard);
+    closeModal();
+  });
+
+  /* =============================================
+     CART
+  ============================================= */
+  function addToCart(card) {
+    var id = card.dataset.id;
+    var name = card.dataset.name;
+    var price = parseFloat(card.dataset.price);
+    var existing = cart.find(function (i) { return i.id === id; });
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ id: id, name: name, price: price, qty: 1 });
     }
-  });
-})();
-
-// ────────────────────────────────────────────────
-// CART
-// ────────────────────────────────────────────────
-function addToCart(id, name, price) {
-  const existing = cart.find(i => i.id === id);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ id, name, price, qty: 1 });
+    updateCartUI();
+    showToast('✅ ' + name + ' əlavə edildi!');
   }
-  updateCartUI();
-  showToast(`✅ ${name} səbətə əlavə edildi!`, 'success');
-}
 
-function removeFromCart(id) {
-  cart = cart.filter(i => i.id !== id);
-  updateCartUI();
-}
-
-function changeQty(id, delta) {
-  const item = cart.find(i => i.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) removeFromCart(id);
-  else updateCartUI();
-}
-
-function getTotal() {
-  return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-}
-
-function updateCartUI() {
-  const count = cart.reduce((s, i) => s + i.qty, 0);
-  const total = getTotal();
-
-  // Badge
-  $('#cartCount').textContent = count;
-
-  // Drawer
-  renderDrawer();
-
-  // Order section cart panel
-  renderOrderCart();
-
-  // Order items preview in form
-  renderOrderItemsPreview();
-}
-
-function renderCartItems(container) {
-  container.innerHTML = '';
-  if (cart.length === 0) {
-    container.innerHTML = `
-      <div class="cart-empty">
-        <i class="fas fa-basket-shopping"></i>
-        <p>Səbətiniz boşdur</p>
-      </div>`;
-    return;
+  function removeFromCart(id) {
+    cart = cart.filter(function (i) { return i.id !== id; });
+    updateCartUI();
   }
-  cart.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'cart-item';
-    div.innerHTML = `
-      <div class="ci-name">${escHtml(item.name)}</div>
-      <div class="ci-controls">
-        <button class="ci-btn minus" data-action="dec" data-id="${item.id}" aria-label="Azalt">−</button>
-        <span class="ci-qty">${item.qty}</span>
-        <button class="ci-btn plus" data-action="inc" data-id="${item.id}" aria-label="Artır">+</button>
-        <button class="ci-btn del" data-action="del" data-id="${item.id}" aria-label="Sil"><i class="fas fa-trash-alt"></i></button>
-      </div>
-      <div class="ci-price">${(item.price * item.qty).toFixed(2)} ₼</div>
-    `;
-    container.appendChild(div);
-  });
-  // Attach controls
-  container.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+
+  function changeQty(id, delta) {
+    var item = cart.find(function (i) { return i.id === id; });
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) removeFromCart(id);
+    else updateCartUI();
+  }
+
+  function cartTotal() {
+    return cart.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
+  }
+
+  function renderCartItems(container) {
+    if (!container) return;
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="cart-empty"><i class="fas fa-basket-shopping"></i><p>Səbətiniz boşdur.<br/>Menyudan məhsul əlavə edin.</p></div>';
+      return;
+    }
+    container.innerHTML = cart.map(function (item) {
+      return '<div class="cart-item">' +
+        '<div class="ci-name">' + item.name + '</div>' +
+        '<div class="ci-controls">' +
+          '<button onclick="window._cartDec(\'' + item.id + '\')"><i class="fas fa-minus"></i></button>' +
+          '<span class="ci-qty">' + item.qty + '</span>' +
+          '<button onclick="window._cartInc(\'' + item.id + '\')"><i class="fas fa-plus"></i></button>' +
+        '</div>' +
+        '<div class="ci-price">' + fmt(item.price * item.qty) + '</div>' +
+        '<button class="ci-remove" onclick="window._cartDel(\'' + item.id + '\')"><i class="fas fa-trash"></i></button>' +
+      '</div>';
+    }).join('');
+  }
+
+  window._cartInc = function (id) { changeQty(id, 1); };
+  window._cartDec = function (id) { changeQty(id, -1); };
+  window._cartDel = function (id) { removeFromCart(id); };
+
+  function updateCartUI() {
+    var count = cart.reduce(function (s, i) { return s + i.qty; }, 0);
+    var total = cartTotal();
+
+    // Navbar count
+    $('#cartCount').textContent = count;
+
+    // Cart panel in order section
+    renderCartItems($('#cartItems'));
+    var cartSummary = $('#cartSummary');
+    if (cartSummary) {
+      cartSummary.style.display = cart.length ? '' : 'none';
+      if ($('#cartTotal')) $('#cartTotal').textContent = fmt(total);
+    }
+
+    // Drawer
+    renderCartItems($('#drawerItems'));
+    var df = $('#drawerFooter');
+    if (df) {
+      df.style.display = cart.length ? '' : 'none';
+      if ($('#drawerTotal')) $('#drawerTotal').textContent = fmt(total);
+    }
+
+    // Order preview in form
+    var preview = $('#orderItemsPreview');
+    var list = $('#orderItemsList');
+    if (preview && list) {
+      preview.style.display = cart.length ? '' : 'none';
+      list.innerHTML = cart.map(function (i) {
+        return '<div class="oi-row"><span>' + i.name + ' x' + i.qty + '</span><strong>' + fmt(i.price * i.qty) + '</strong></div>';
+      }).join('') + '<div class="oi-row" style="border-top:1px dashed #ddd;margin-top:6px;padding-top:6px"><strong>Cəmi:</strong><strong style="color:var(--primary)">' + fmt(total) + '</strong></div>';
+    }
+  }
+
+  // Add to cart buttons
+  $$('.add-btn, .add-cart-btn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      const id = btn.dataset.id;
-      if (btn.dataset.action === 'inc') changeQty(id, 1);
-      if (btn.dataset.action === 'dec') changeQty(id, -1);
-      if (btn.dataset.action === 'del') removeFromCart(id);
+      var card = btn.closest('.menu-card');
+      if (card) addToCart(card);
     });
   });
-}
 
-function renderDrawer() {
-  const container = $('#drawerItems');
-  const footer    = $('#drawerFooter');
-  renderCartItems(container);
-  const total = getTotal();
-  footer.style.display = cart.length ? 'block' : 'none';
-  $('#drawerTotal').textContent = total.toFixed(2) + ' ₼';
-}
+  /* =============================================
+     CART DRAWER
+  ============================================= */
+  var cartDrawer = $('#cartDrawer');
+  var drawerOverlay = $('#drawerOverlay');
+  var drawerClose = $('#drawerClose');
 
-function renderOrderCart() {
-  const container  = $('#cartItems');
-  const summary    = $('#cartSummary');
-  renderCartItems(container);
-  summary.style.display = cart.length ? 'block' : 'none';
-  $('#cartTotal').textContent = getTotal().toFixed(2) + ' ₼';
-}
-
-function renderOrderItemsPreview() {
-  const preview = $('#orderItemsPreview');
-  const list    = $('#orderItemsList');
-  if (cart.length === 0) {
-    preview.style.display = 'none';
-    return;
+  function openDrawer() {
+    cartDrawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
-  preview.style.display = 'block';
-  list.innerHTML = cart.map(i =>
-    `<div class="order-item-line">
-      <span>${escHtml(i.name)} × ${i.qty}</span>
-      <strong>${(i.price * i.qty).toFixed(2)} ₼</strong>
-    </div>`
-  ).join('') +
-  `<div class="order-item-line" style="font-weight:800;border-top:2px solid #e5e7eb;padding-top:0.5rem;margin-top:0.25rem;">
-    <span>Cəmi</span>
-    <strong style="color:var(--primary)">${getTotal().toFixed(2)} ₼</strong>
-  </div>`;
-}
+  function closeDrawer() {
+    cartDrawer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
-// Cart button → drawer
-$('#cartBtn').addEventListener('click', () => {
-  $('#cartDrawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  renderDrawer();
-});
-$('#drawerClose').addEventListener('click', closeDrawer);
-$('#drawerOverlay').addEventListener('click', closeDrawer);
-function closeDrawer() {
-  $('#cartDrawer').classList.remove('open');
-  document.body.style.overflow = '';
-}
+  $('#cartBtn').addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
 
-// Go to order from drawer
-$('#goOrderBtn').addEventListener('click', () => {
-  closeDrawer();
-});
-
-// Add to cart from menu cards
-$$('.add-btn, .add-cart-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const card  = btn.closest('.menu-card');
-    const id    = card.dataset.id;
-    const name  = card.dataset.name;
-    const price = parseFloat(card.dataset.price);
-    addToCart(id, name, price);
+  $('#goOrderBtn').addEventListener('click', function () {
+    closeDrawer();
   });
-});
 
-// ────────────────────────────────────────────────
-// GALLERY & LIGHTBOX
-// ────────────────────────────────────────────────
-(function initGallery() {
-  const galleryGrid = $('#galleryGrid');
-  const lightbox    = $('#lightbox');
-  const lbImg       = $('#lbImg');
-  const lbClose     = $('#lbClose');
-  const lbPrev      = $('#lbPrev');
-  const lbNext      = $('#lbNext');
+  /* =============================================
+     GALLERY LIGHTBOX
+  ============================================= */
+  var lightbox = $('#lightbox');
+  var lbImg = $('#lbImg');
+  var lbClose = $('#lbClose');
+  var lbPrev = $('#lbPrev');
+  var lbNext = $('#lbNext');
+  var galleryImages = [];
+  var lbIndex = 0;
 
-  // Collect gallery images
-  galleryImages = $$('.gallery-item img').map(img => ({ src: img.src, alt: img.alt }));
+  function buildGalleryIndex() {
+    galleryImages = $$('.gallery-item img').map(function (img) {
+      return { src: img.src, alt: img.alt };
+    });
+  }
 
   function openLightbox(idx) {
-    lightboxIndex = idx;
-    updateLightboxImg();
+    buildGalleryIndex();
+    lbIndex = idx;
+    lbImg.src = galleryImages[lbIndex].src;
+    lbImg.alt = galleryImages[lbIndex].alt;
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -314,221 +294,188 @@ $$('.add-btn, .add-cart-btn').forEach(btn => {
     document.body.style.overflow = '';
   }
 
-  function updateLightboxImg() {
-    const item  = galleryImages[lightboxIndex];
+  function lbGo(dir) {
+    lbIndex = (lbIndex + dir + galleryImages.length) % galleryImages.length;
     lbImg.style.opacity = '0';
-    setTimeout(() => {
-      lbImg.src = item.src;
-      lbImg.alt = item.alt;
+    setTimeout(function () {
+      lbImg.src = galleryImages[lbIndex].src;
+      lbImg.alt = galleryImages[lbIndex].alt;
       lbImg.style.opacity = '1';
-    }, 150);
-    lbImg.style.transition = 'opacity 0.2s';
+    }, 140);
   }
 
-  // Click gallery items
-  $$('.gallery-item').forEach((item, idx) => {
-    item.addEventListener('click', () => openLightbox(idx));
+  lbImg.style.transition = 'opacity .15s';
+
+  $$('.gallery-item').forEach(function (item, idx) {
+    item.addEventListener('click', function () { openLightbox(idx); });
   });
 
   lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || e.target === $('#lightbox > .lb-content')) closeLightbox();
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox || e.target.classList.contains('lb-content')) closeLightbox();
   });
+  lbPrev.addEventListener('click', function (e) { e.stopPropagation(); lbGo(-1); });
+  lbNext.addEventListener('click', function (e) { e.stopPropagation(); lbGo(1); });
 
-  lbPrev.addEventListener('click', (e) => {
-    e.stopPropagation();
-    lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
-    updateLightboxImg();
-  });
-
-  lbNext.addEventListener('click', (e) => {
-    e.stopPropagation();
-    lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
-    updateLightboxImg();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape')       closeLightbox();
-    if (e.key === 'ArrowLeft')    { lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length; updateLightboxImg(); }
-    if (e.key === 'ArrowRight')   { lightboxIndex = (lightboxIndex + 1) % galleryImages.length; updateLightboxImg(); }
-  });
-
-  // Touch swipe for lightbox
-  let touchStartX = 0;
-  lightbox.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  lightbox.addEventListener('touchend', (e) => {
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
-      else          lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
-      updateLightboxImg();
-    }
+  // Touch/swipe support
+  var lbTouchX = null;
+  lightbox.addEventListener('touchstart', function (e) { lbTouchX = e.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', function (e) {
+    if (lbTouchX === null) return;
+    var dx = e.changedTouches[0].clientX - lbTouchX;
+    if (Math.abs(dx) > 50) lbGo(dx < 0 ? 1 : -1);
+    lbTouchX = null;
   }, { passive: true });
-})();
 
-// ────────────────────────────────────────────────
-// ORDER FORM + GEOLOCATION
-// ────────────────────────────────────────────────
-(function initOrderForm() {
-  const form      = $('#orderForm');
-  const getLocBtn = $('#getLocBtn');
-  const locStatus = $('#locStatus');
-  const locInput  = $('#locationLink');
-  const addrInput = $('#custAddress');
-  const sendBtn   = $('#sendOrderBtn');
+  // Keyboard
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'ArrowRight') lbGo(1);
+    if (e.key === 'ArrowLeft') lbGo(-1);
+  });
 
-  // Geolocation
-  getLocBtn.addEventListener('click', () => {
+  /* =============================================
+     GEOLOCATION
+  ============================================= */
+  var getLocBtn = $('#getLocBtn');
+  var locStatus = $('#locStatus');
+  var custAddress = $('#custAddress');
+  var locationLink = $('#locationLink');
+
+  getLocBtn.addEventListener('click', function () {
     if (!navigator.geolocation) {
-      showLocStatus('error', '⚠️ Brauzerin konum xidmətini dəstəkləmir.');
+      locStatus.className = 'loc-status err';
+      locStatus.textContent = '⚠️ Cihazınız geolocation dəstəkləmir.';
       return;
     }
     getLocBtn.classList.add('loading');
-    showLocStatus('', '📡 Konum alınır...');
+    locStatus.className = 'loc-status';
+    locStatus.textContent = '📍 Konum alınır...';
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      function (pos) {
         getLocBtn.classList.remove('loading');
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const link = `https://www.google.com/maps?q=${lat},${lng}`;
-        locInput.value  = link;
-        addrInput.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        showLocStatus('success', '✅ Konum uğurla alındı!');
+        var lat = pos.coords.latitude.toFixed(6);
+        var lng = pos.coords.longitude.toFixed(6);
+        var link = 'https://maps.google.com/maps?q=' + lat + ',' + lng;
+        locationLink.value = link;
+        custAddress.value = 'Konum: ' + lat + ', ' + lng;
+        locStatus.className = 'loc-status ok';
+        locStatus.textContent = '✅ Konum uğurla alındı!';
       },
-      (err) => {
+      function (err) {
         getLocBtn.classList.remove('loading');
-        let msg = '⚠️ Konum alına bilmədi. Əl ilə daxil edin.';
-        if (err.code === 1) msg = '🔒 Konum icazəsi rədd edildi. Əl ilə daxil edin.';
-        showLocStatus('error', msg);
+        locStatus.className = 'loc-status err';
+        var msgs = {
+          1: '❌ Konum icazəsi rədd edildi.',
+          2: '❌ Konum müəyyən edilə bilmədi.',
+          3: '❌ Zaman aşımı oldu.'
+        };
+        locStatus.textContent = msgs[err.code] || '❌ Konum alınamadı.';
       },
-      { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
+      { timeout: 10000, enableHighAccuracy: true, maximumAge: 0 }
     );
   });
 
-  function showLocStatus(type, msg) {
-    locStatus.textContent    = msg;
-    locStatus.className      = 'loc-status ' + type;
-  }
+  /* =============================================
+     ORDER FORM + WHATSAPP
+  ============================================= */
+  var orderForm = $('#orderForm');
 
-  // Form submit
-  form.addEventListener('submit', (e) => {
+  orderForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (!validateForm()) return;
 
-    const name    = $('#custName').value.trim();
-    const phone   = $('#custPhone').value.trim();
-    const address = addrInput.value.trim();
-    const locLink = locInput.value.trim();
-    const note    = $('#custNote').value.trim();
+    var name = $('#custName').value.trim();
+    var phone = $('#custPhone').value.trim();
+    var address = $('#custAddress').value.trim();
+    var note = $('#custNote').value.trim();
+    var locLink = locationLink.value.trim();
 
-    // Build WhatsApp message
-    let msg = `🍖 *YENİ SİFARİŞ – 618 Dönər*\n`;
-    msg += `━━━━━━━━━━━━━━━━━━\n`;
-    msg += `👤 *Ad:* ${name}\n`;
-    msg += `📞 *Telefon:* ${phone}\n`;
-    msg += `📍 *Ünvan:* ${address}\n`;
-    if (locLink) msg += `🗺️ *Konum:* ${locLink}\n`;
-    msg += `━━━━━━━━━━━━━━━━━━\n`;
-    msg += `🛒 *Sifarişlər:*\n`;
-
-    if (cart.length > 0) {
-      cart.forEach(item => {
-        msg += `• ${item.name} × ${item.qty} = ${(item.price * item.qty).toFixed(2)} ₼\n`;
-      });
-      msg += `━━━━━━━━━━━━━━━━━━\n`;
-      msg += `💰 *Cəmi: ${getTotal().toFixed(2)} ₼*\n`;
-      msg += `🛵 *Çatdırılma: Pulsuzdur!*\n`;
-    } else {
-      msg += `• (Seçilmiş məhsul yoxdur)\n`;
-    }
-
-    if (note) msg += `━━━━━━━━━━━━━━━━━━\n📝 *Qeyd:* ${note}\n`;
-
-    const encoded = encodeURIComponent(msg);
-    const waURL   = `https://wa.me/994559406018?text=${encoded}`;
-    window.open(waURL, '_blank', 'noopener,noreferrer');
-
-    showToast('✅ Sifariş WhatsApp-a göndərildi!', 'success');
-  });
-
-  function validateForm() {
-    let valid = true;
-    const name  = $('#custName');
-    const phone = $('#custPhone');
-    const addr  = addrInput;
-
-    [name, phone, addr].forEach(f => {
-      f.classList.remove('invalid');
-      if (!f.value.trim()) { f.classList.add('invalid'); valid = false; }
+    // Validation
+    var valid = true;
+    [$('#custName'), $('#custPhone'), $('#custAddress')].forEach(function (el) {
+      el.classList.remove('error');
     });
+
+    if (!name) { $('#custName').classList.add('error'); valid = false; }
+    if (!phone) { $('#custPhone').classList.add('error'); valid = false; }
+    if (!address) { $('#custAddress').classList.add('error'); valid = false; }
 
     if (!valid) {
-      showToast('⚠️ Zəhmət olmasa bütün məcburi sahələri doldurun!', 'error');
+      showToast('⚠️ Zəhmət olmasa bütün məcburi sahələri doldurun!', 2500);
+      return;
     }
-    return valid;
-  }
-})();
 
-// ────────────────────────────────────────────────
-// FAQ ACCORDION
-// ────────────────────────────────────────────────
-(function initFAQ() {
-  $$('.faq-item').forEach(item => {
-    const btn = item.querySelector('.faq-q');
-    btn.addEventListener('click', () => {
-      const isOpen = item.classList.contains('open');
-      // Close all
-      $$('.faq-item').forEach(i => i.classList.remove('open'));
-      // Toggle current
-      if (!isOpen) item.classList.add('open');
+    if (cart.length === 0) {
+      showToast('🛒 Səbətiniz boşdur! Əvvəlcə məhsul əlavə edin.', 2500);
+      return;
+    }
+
+    // Build WhatsApp message
+    var total = cartTotal();
+    var lines = ['🍖 *618 Dönər – Yeni Sifariş*', ''];
+    lines.push('👤 *Ad:* ' + name);
+    lines.push('📞 *Telefon:* ' + phone);
+    lines.push('📍 *Ünvan:* ' + address);
+    if (locLink) lines.push('🗺️ *Konum:* ' + locLink);
+    lines.push('');
+    lines.push('📋 *Sifarişlər:*');
+    cart.forEach(function (item) {
+      lines.push('  • ' + item.name + ' x' + item.qty + ' = ' + fmt(item.price * item.qty));
     });
+    lines.push('');
+    lines.push('💰 *Cəmi: ' + fmt(total) + '*');
+    lines.push('🛵 *Çatdırılma: Pulsuz*');
+    if (note) { lines.push(''); lines.push('📝 *Qeyd:* ' + note); }
+
+    var msg = encodeURIComponent(lines.join('\n'));
+    var waUrl = 'https://wa.me/994559406018?text=' + msg;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+
+    showToast('✅ Sifarişiniz WhatsApp-a göndərildi!', 3000);
   });
-})();
 
-// ────────────────────────────────────────────────
-// TOAST
-// ────────────────────────────────────────────────
-let toastTimeout;
-function showToast(msg, type) {
-  const toast = $('#toast');
-  clearTimeout(toastTimeout);
-  toast.textContent = msg;
-  toast.className   = `toast ${type || ''}`;
-  // Force reflow
-  void toast.offsetHeight;
-  toast.classList.add('show');
-  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
-}
+  /* =============================================
+     FAQ ACCORDION
+  ============================================= */
+  $$('.faq-q').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var item = btn.closest('.faq-item');
+      var isOpen = btn.classList.contains('open');
 
-// ────────────────────────────────────────────────
-// UTILITY
-// ────────────────────────────────────────────────
-function escHtml(str) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  return String(str).replace(/[&<>"']/g, m => map[m]);
-}
+      // Close all
+      $$('.faq-q').forEach(function (b) {
+        b.classList.remove('open');
+        var a = b.nextElementSibling;
+        if (a) a.classList.remove('open');
+      });
 
-// ────────────────────────────────────────────────
-// INTERSECTION OBSERVER — animate on scroll
-// ────────────────────────────────────────────────
-(function initAnimations() {
-  if (!('IntersectionObserver' in window)) return;
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-in');
-        observer.unobserve(entry.target);
+      // Toggle clicked
+      if (!isOpen) {
+        btn.classList.add('open');
+        var ans = btn.nextElementSibling;
+        if (ans) ans.classList.add('open');
       }
     });
-  }, { threshold: 0.1 });
-
-  $$('.menu-card, .gallery-item, .contact-card, .hours-card, .faq-item').forEach(el => {
-    observer.observe(el);
   });
-})();
 
-// ────────────────────────────────────────────────
-// INIT
-// ────────────────────────────────────────────────
-updateCartUI();
+  /* =============================================
+     SMOOTH SCROLL
+  ============================================= */
+  $$('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var target = document.getElementById(a.getAttribute('href').slice(1));
+      if (target) {
+        e.preventDefault();
+        var top = target.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* =============================================
+     INIT
+  ============================================= */
+  updateCartUI();
+
+})();
